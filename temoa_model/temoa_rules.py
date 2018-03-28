@@ -1335,57 +1335,67 @@ def RampDownPeriod_Constraint ( M, p, t, v):
 
 	return Constraint.Skip # We don't need inter-period ramp up/down constraint.
 	
-def ReserveMargin_Constraint( M, p, g, s, d):
+def ReserveMargin_Constraint( M, p, z): #Regional
 	r"""
-To assure system reliability of power grid, during each period :math:`p`, the
-sum of available capacity of all reserve technologies (defined by set :math:`\textbf{T}^{res}`)
-:math:`\sum_{t \in T^{res}} \textbf{CAPAVL}_{p,t}`, should not exceed the peak
-load plus a reserve margin :math:`RES_c`. Note reserve margin is typically
-expressed in the form of percentage. In Equation :eq:`reserve_margin`, we use 
-:math:`(s^*,d^*)` to represent the peak-load time slice.
+Reserve margin constraint applies to demand commodity c, which is defined in set
+:math:'\textbf{C}^{res}'. During the time slice with peak load :math:'(s^*, d^*)', 
+the sum of capacity of all technologies providing reserve (set :math:'\textbf{T}^{res}') 
+should exceed the load during that time slice by a certain percentage 
+:math:'\textbf{RES}_c'. 
 
 .. math::
    \sum_{t \in T^{res}} {
-      CC_t \cdot
+      \textbf{CC}_t \cdot
       \textbf{CAPAVL}_{p,t} \cdot
       SEG_{s^*,d^*} \cdot C2A_t }
    \geq
-   DEM_{p,c} \cdot
-   DSD_{s^*, d^*, c} \cdot
-   (1 + RES_c)
+   \textbf{DEM}_{p,c} \cdot
+   \textbf{DSD}_{s^*, d^*, c} \cdot
+   (1 + \textbf{RES}_c)
    \\
    \forall
    p \in \textbf{P}^o,
    c \in \textbf{C}^{res}
-   :label: reserve_margin
 """
 	# The season and time-of-day of the slice with the maximum average load. 
+	#s_star, d_star, load_star = None, None, 0
+	#for s, d, dem in M.DemandSpecificDistribution.iterkeys():
+	#	load = M.DemandSpecificDistribution[s, d, dem]/M.SegFrac[s, d]
+	#	if load_star <= load:
+	#		s_star, d_star, load_star = s, d, load
+	
+	s='Summer'
+	d='peak'
+
+	#load_star=0
+	#for season, timeofday, dem in M.DemandSpecificDistribution.iterkeys():
+	#	load = M.DemandSpecificDistribution[season, timeofday, dem]/M.SegFrac[season, timeofday]
+	#	if load_star <= load:
+	#		s, d = season, timeofday
+
+
+
+
 	PowerTechs=set()  #all the power generation technologies
-	PowerCommodities=set()  #it consists of all the commodities coming out of powerplants: ELCP, ELCP_Renewables, ELCP_SOL
-	for i in M.ReserveMargin.sparse_keys():
-	        if i[1]==g:
-	                PowerCommodities.add(i[0])
 
-	if not PowerCommodities:
-	        return Constraint.Skip
+	for i in M.ReserveMargin:
+		if i[1]==z:
+			PowerTechs.add(i[0])
 
-	for i,t,v,o in M.Efficiency:
-	        if o in PowerCommodities:
-	                PowerTechs.add(t)
 
 	expr_left = sum (value( M.CapacityCredit[t] )*
-	                                M.V_CapacityAvailableByPeriodAndTech[p, t]*
-	                                value( M.CapacityToActivity[t] )*
-	                                value( M.SegFrac[s, d] )
-	                                for t in PowerTechs if (p, t) in M.CapacityAvailableVar_pt  ) #M.CapacityAvailableVar_pt check if all the possible consistent combinations of t and p
+					M.V_CapacityAvailableByPeriodAndTech[p, t]*
+					value( M.CapacityToActivity[t] )*
+					value( M.SegFrac[s, d] )
+					for t in PowerTechs if (p, t) in M.CapacityAvailableVar_pt  ) #M.CapacityAvailableVar_pt check if all the possible consistent combinations of t and p
 
 
 
 	total_generation = sum( M.V_Activity[p, s, d, t, S_v]
-	                        for  t  in PowerTechs
-	                        for S_v in M.ProcessVintages( p, t ))
+      				for  t  in PowerTechs
+      				for S_v in ProcessVintages( p, t ))
 
-	expr_right = total_generation*(1 +  M.ReserveMargin[PowerCommodities.pop(),g] ) 
+	expr_right = total_generation*(1.15) 
 
 
 	return (expr_left >= expr_right)

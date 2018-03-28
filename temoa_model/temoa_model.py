@@ -62,6 +62,7 @@ def temoa_create_model ( name='The Temoa Energy System Model' ):
     M.tech_ramping    = Set( within=M.tech_all )
     M.tech_capacity_min   = Set( within=M.tech_all ) 
     M.tech_capacity_max   = Set( within=M.tech_all ) 
+    M.ReserveMargin   = Set(within=M.tech_all*M.Zones) #Regional
     
     # Technology sets used for sector-specific MGA weights
     M.tech_mga         = Set( within=M.tech_all )
@@ -102,7 +103,7 @@ def temoa_create_model ( name='The Temoa Energy System Model' ):
     M.CapacityFactor_sdt  = Set( dimen=3, initialize=CapacityFactorTechIndices )
     M.CapacityFactorTech    = Param( M.CapacityFactor_sdt, default=1 )
     M.initialize_CapacityFactors = BuildAction( rule=CreateCapacityFactors )
-    M.LifetimeTech           = Param( M.tech_all, default=30 )    # in years
+    M.LifetimeTech           = Param( M.tech_all, default=40 )    # in years
     M.LifetimeLoanTech       = Param( M.tech_all, default=10 )    # in years
     M.LifetimeProcess_tv     = Set( dimen=2, initialize=LifetimeProcessIndices )
     M.LifetimeProcess        = Param( M.LifetimeProcess_tv )      # in years
@@ -172,7 +173,6 @@ def temoa_create_model ( name='The Temoa Energy System Model' ):
 
     # Parameters for reserve margin constraints.
     M.CapacityCredit = Param( M.tech_all, default=1 )
-    M.ReserveMargin  = Param( M.commodity_all, M.Zones , default=0.0 )
 
     # Decision Variables--------------------------------------------------------
     #   Base decision variables
@@ -381,10 +381,10 @@ def temoa_create_model ( name='The Temoa Energy System Model' ):
       M.RampDownConstraintPeriod_ptv, 
       rule=RampDownPeriod_Constraint )
 
-    M.ReserveMargin_psdg = Set(
-      dimen = 4, initialize=ReserveMarginIndices )
+    M.ReserveMargin_pz = Set( #Regional
+      dimen = 2, initialize=ReserveMarginIndices )
     M.ReserveMarginConstraint = Constraint(
-      M.ReserveMargin_psdg,
+      M.ReserveMargin_pz,
       rule=ReserveMargin_Constraint)
 
     # Constraints for user-defined limits

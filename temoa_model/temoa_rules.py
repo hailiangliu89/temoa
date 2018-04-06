@@ -602,7 +602,7 @@ TechOutputSplit_Constraint for an analogous explanation.
 
 	total_inp = sum( M.V_FlowIn[p, s, d, S_i, t, v, S_o]
 	  for S_i in M.ProcessInputs( p, t, v )
-	  for S_o in M.ProcessOutputsByInput( p, t, v, i )
+	  for S_o in M.ProcessOutputsByInput( p, t, v, S_i )
 	  for d in M.time_of_day
 	)
 
@@ -1393,7 +1393,7 @@ should exceed the load during that time slice by a certain percentage
 
 	total_generation = sum( M.V_Activity[p, s, d, t, S_v]
       				for  t  in PowerTechs
-      				for S_v in ProcessVintages( p, t ))
+      				for S_v in M.ProcessVintages( p, t ))
 
 	expr_right = total_generation*(1.15) 
 

@@ -1076,14 +1076,12 @@ def RampConstraintPeriodIndices ( M ):
 
 	return indices
 
-def ReserveMarginIndices ( M ):
+def ReserveMarginIndices ( M ): #regional
 		indices = set(
-			(p , g , s , d )
+			(p , z)
 
 			for p in M.time_optimize
-			for s in M.time_season
-			for d in M.time_of_day
-			for g in M.Zones
+			for z in M.Zones
 			)
 		return indices
 

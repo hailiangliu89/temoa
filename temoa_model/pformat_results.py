@@ -266,11 +266,11 @@ def pformat_results ( pyomo_instance, pyomo_result, options ):
 	# Table dictionary below maps variable names to database table names
 	tables = { "V_FlowIn"   : "Output_VFlow_In",  \
 			   "V_FlowOut"  : "Output_VFlow_Out", \
-			   "V_Capacity" : "Output_V_Capacity",       \
+			   #"V_Capacity" : "Output_V_Capacity",       \ #regional
 			   "V_CapacityAvailableByPeriodAndTech"   : "Output_CapacityByPeriodAndTech",  \
 			   "V_EmissionActivityByPeriodAndProcess" : "Output_Emissions", \
-			   "Objective"  : "Output_Objective", \
-			   "Costs"      : "Output_Costs", \
+			   #"Objective"  : "Output_Objective", \        #regional
+			   #"Costs"      : "Output_Costs", \            #regional
 			   "V_HourlyStorage"   :  "Output_HourlyStorage"}
 	
 	db_tables = ['time_periods', 'time_season', 'time_of_day', 'technologies', 'commodities',\

@@ -62,6 +62,7 @@ def temoa_create_model ( name='The Temoa Energy System Model' ):
     M.tech_ramping    = Set( within=M.tech_all )
     M.tech_capacity_min   = Set( within=M.tech_all ) 
     M.tech_capacity_max   = Set( within=M.tech_all ) 
+    M.Zones = Set()
     M.ReserveMargin   = Set(within=M.tech_all*M.Zones) #Regional
     
     # Technology sets used for sector-specific MGA weights
@@ -79,7 +80,7 @@ def temoa_create_model ( name='The Temoa Energy System Model' ):
     M.commodity_carrier = M.commodity_physical | M.commodity_demand
     M.commodity_all     = M.commodity_carrier | M.commodity_emissions
     
-    M.Zones = Set()
+
     # Define Parameters---------------------------------------------------------
     
     # Note: In order to increase model efficiency, we use sparse indexing of 

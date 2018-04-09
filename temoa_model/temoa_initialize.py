@@ -23,7 +23,7 @@ from operator import itemgetter as iget
 from cStringIO import StringIO
 from itertools import product as cross_product, islice, izip
 from sys import argv, stderr as SE, stdout as SO
-
+from IPython import embed as IP
 try:
 	from pyomo.core import (
 	  AbstractModel, BuildAction, Constraint, NonNegativeReals, Reals, Objective, Param,
@@ -909,10 +909,8 @@ def DemandActivityConstraintIndices ( M ):
 		tmp = set(
 		  (p, s, d, t, v, dem, first[0], first[1])
 
-		  for Fp, Fs, Fd, i, t, v, Fo in M.V_FlowOut.iterkeys()
-		  if Fp == p and Fo == dem
+		  for t, v in M.helper_commodityUStreamProcess[p, dem]
 		  for s, d in slices[1:]
-		  if Fs == s and Fd == d
 		)
 		indices.update( tmp )
 

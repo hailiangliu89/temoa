@@ -1,0 +1,17 @@
+name: temoa
+
+channels:
+- conda-forge
+
+dependencies:
+- python=2.7
+- conda
+- jupyterlab
+- scipy
+- numpy
+- pandas
+- xlwt
+- pyomo
+- snakeviz
+- pip:
+    - tqdm  # for example only, tqdm is actually available by conda.
